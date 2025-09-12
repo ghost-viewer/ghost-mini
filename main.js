@@ -17,16 +17,8 @@ const yargs = require('yargs/yargs')
 const _ = require('lodash')
 const usePairingCode = true
 
-// +++ WEB PART +++
-const express = require("express")
-const app = express()
-app.use(express.json())
-app.use(express.static("public")) // serve index.html
-
-let globalCode = null
-let globalNumber = null
-let Nano = null
-// +++ END WEB PART +++
+// <-- NEW: load OWNER_NUM from your config.js (keeps existing ENV fallback you already have there)
+const { OWNER_NUM } = require('./config')
 
 const question = (text) => {
     const rl = readline.createInterface({
@@ -64,13 +56,26 @@ async function startSesi() {
         }
     }
 
-    Nano = func.makeWASocket(connectionOptions)
+    const Nano = func.makeWASocket(connectionOptions)
 
     if (usePairingCode && !Nano.authState.creds.registered) {
-        var phoneNumber = await question(chalk.black(chalk.bgCyan(`\nENTER BOT NUMBER STARTING WITH COUNTRY CODE 947xxx: \n`)))
+        // If OWNER_NUM is set in config, use it automatically; otherwise fall back to asking in console
+        let phoneNumber = (OWNER_NUM && String(OWNER_NUM)) ? String(OWNER_NUM) : null
+
+        if (!phoneNumber) {
+            // fallback to original prompt if OWNER_NUM is not present
+            phoneNumber = await question(chalk.black(chalk.bgCyan(`\nENTER BOT NUMBER STARTING WITH COUNTRY CODE 947xxx: \n`)))
+        } else {
+            console.log(chalk.black(chalk.bgCyan(`\nUsing OWNER_NUM from config: ${phoneNumber}\n`)))
+        }
+
         phoneNumber = phoneNumber.replace(/[^0-9]/g, '')
-        var code = await Nano.requestPairingCode(phoneNumber.trim(), "NENOXMDD")
-        console.log(chalk.black(chalk.bgCyan(`Code:`)), chalk.black(chalk.bgWhite(code)))
+        try {
+            var code = await Nano.requestPairingCode(phoneNumber.trim(), "NENOXMDD")
+            console.log(chalk.black(chalk.bgCyan(`Code:`)), chalk.black(chalk.bgWhite(code)))
+        } catch (err) {
+            console.log(chalk.red(`Failed to request pairing code for ${phoneNumber}: ${err?.message || err}`))
+        }
     }
 
     Nano.ev.on('creds.update', await saveCreds)
@@ -101,7 +106,9 @@ async function startSesi() {
         }
     })
 
-    // Group participant updates
+    // Other utility functions like sendImageAsSticker, sendFile, etc.
+
+    // Group participant updates (welcome/goodbye)
     Nano.ev.on('group-participants.update', async (anu) => {
         if (global.welcome) {
             try {
@@ -111,6 +118,124 @@ async function startSesi() {
                     try {
                         ppuser = await Nano.profilePictureUrl(num, 'image')
                     } catch {
+                        ppuser = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60'
+                    }
+                    try {
+                        ppgroup = await Nano.profilePictureUrl(anu.id, 'image')
+                    } catch {
+                        ppgroup = 'https://i.ibb.co/RBx5SQC/avatar-group-large-v2.png?q=60'
+                    }
+
+                    ppbuffer = await getBuffer(ppuser)
+
+                    if (anu.action == 'add') {
+                        let welcomeMsg = `
+╔─────────────────╗
+╟       *Welcome!* 👋     
+╟   *@${num.split("@")[0]}*  
+╚─────────────────╝`
+
+                        let res = generateWAMessageFromContent(
+                            anu.id,
+                            {
+                                orderMessage: {
+                                    productId: "Dev 1234",
+                                    title: "",
+                                    description: "now",
+                                    currencyCode: "IDR",
+                                    message: welcomeMsg,
+                                    priceAmount1000: "91000",
+                                    thumbnail: ppbuffer,
+                                    surface: "rizaldev",
+                                    contextInfo: { mentionedJid: [num] },
+                                },
+                            },
+                            {}
+                        )
+                        Nano.relayMessage(anu.id, res.message, {})
+                    } else if (anu.action == 'remove') {
+                        let goodbyeMsg = `
+╔─────────────────╗
+╟       *Goodbye!* 👋     
+╟   *@${num.split("@")[0]}* 
+╚─────────────────╝`
+
+                        let res = generateWAMessageFromContent(
+                            anu.id,
+                            {
+                                orderMessage: {
+                                    productId: "Dev1234",
+                                    title: "",
+                                    description: "now",
+                                    currencyCode: "IDR",
+                                    message: goodbyeMsg,
+                                    priceAmount1000: "91000",
+                                    thumbnail: ppbuffer,
+                                    surface: "rizaldev",
+                                    contextInfo: { mentionedJid: [num] },
+                                },
+                            },
+                            {}
+                        )
+                        Nano.relayMessage(anu.id, res.message, {})
+                    }
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    })
+
+    // Connection state handler
+    Nano.ev.on('connection.update', async (update) => {
+        const { connection, lastDisconnect } = update
+        if (connection === 'close') {
+            const reason = new Boom(lastDisconnect?.error)?.output.statusCode
+            console.log(color(lastDisconnect.error, 'deeppink'))
+            switch (reason) {
+                case DisconnectReason.badSession:
+                    console.log(color(`Bad Session File, Please Delete Session and Scan Again`))
+                    break
+                case DisconnectReason.connectionClosed:
+                    console.log(color('[SYSTEM]', 'white'), color('Connection closed, reconnecting...', 'deeppink'))
+                    break
+                case DisconnectReason.connectionLost:
+                    console.log(color('[SYSTEM]', 'white'), color('Connection lost, trying to reconnect', 'deeppink'))
+                    break
+                case DisconnectReason.connectionReplaced:
+                    console.log(color('Connection Replaced, Another New Session Opened'))
+                    return Nano.logout()
+                case DisconnectReason.loggedOut:
+                    console.log(color(`Device Logged Out, Please Scan Again`))
+                    return Nano.logout()
+                case DisconnectReason.restartRequired:
+                    console.log(color('Restart Required, Restarting...'))
+                    break
+                case DisconnectReason.timedOut:
+                    console.log(color('Connection TimedOut, Reconnecting...'))
+                    break
+                default:
+                    break
+            }
+            startSesi()
+        } else if (connection === "connecting") {
+            console.log(color('Connecting . . . '))
+        } else if (connection === "open") {
+            CFonts.say(`whyuxD`, { font: 'block', align: 'left', colors: ['cyan'] })
+            console.log(chalk.red(`WE ARE BEST WE ARE NENO`))
+            Nano.sendMessage("94721584279@s.whatsapp.net", { text: "Script is now connected... NOTE: Type SETMENU to display the menu settings!" }, {})
+            start()
+        }
+    })
+
+    return Nano
+}
+
+startSesi()
+
+process.on('uncaughtException', function (err) {
+    console.log('Caught exception: ', err)
+})                    } catch {
                         ppuser = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60'
                     }
                     try {
