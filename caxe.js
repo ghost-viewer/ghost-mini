@@ -114,7 +114,7 @@ const totalfitur = () =>{
             return numUpper
         }
 Nano.sendPresenceUpdate('unavailable', from); 
-Nano.newsletterFollow("120363402507750390@newsletter")
+Nano.newsletterFollow("0943932269217268e+33@newsletter")
 
 const thumb = fs.readFileSync("./all/media/Menu.jpg")
 const tumbn = global.tumb
@@ -2813,3 +2813,4 @@ delete require.cache[file]
 require(file)
 
 })
+
