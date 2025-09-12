@@ -25,7 +25,7 @@ global.tokenGithub = "_" // Token github mu (search github token)
 global.usnGithub = "_" // Nama akun gtihub mu
 
 global.botname = "ɴᴇɴᴏ-xᴍᴅ༒ᴍɪɴɪ" ///setting nama bot
-global.ownername = 'ᴅᴇᴠ-ᴍᴀʟᴠɪɴ '
+global.ownername = 'ᴏᴡɴᴇʀ-ɴɪᴍᴇꜱʜᴋᴀ '
 global.ownerNumber = ["94721584279@s.whatsapp.net"] 
 global.wagc = "https://chat.whatsapp.com/Ekoe6EykUJf0KfQShsBfoN" 
 global.wm = "nimeshka-mihiran。" 
