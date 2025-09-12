@@ -17,6 +17,17 @@ const yargs = require('yargs/yargs')
 const _ = require('lodash')
 const usePairingCode = true
 
+// +++ WEB PART +++
+const express = require("express")
+const app = express()
+app.use(express.json())
+app.use(express.static("public")) // serve index.html
+
+let globalCode = null
+let globalNumber = null
+let Nano = null
+// +++ END WEB PART +++
+
 const question = (text) => {
     const rl = readline.createInterface({
         input: process.stdin,
@@ -53,7 +64,7 @@ async function startSesi() {
         }
     }
 
-    const Nano = func.makeWASocket(connectionOptions)
+    Nano = func.makeWASocket(connectionOptions)
 
     if (usePairingCode && !Nano.authState.creds.registered) {
         var phoneNumber = await question(chalk.black(chalk.bgCyan(`\nENTER BOT NUMBER STARTING WITH COUNTRY CODE 947xxx: \n`)))
@@ -90,9 +101,7 @@ async function startSesi() {
         }
     })
 
-    // Other utility functions like sendImageAsSticker, sendFile, etc.
-
-    // Group participant updates (welcome/goodbye)
+    // Group participant updates
     Nano.ev.on('group-participants.update', async (anu) => {
         if (global.welcome) {
             try {
@@ -219,4 +228,28 @@ startSesi()
 
 process.on('uncaughtException', function (err) {
     console.log('Caught exception: ', err)
+})
+
+// =======================
+//   WEB API ENDPOINTS
+// =======================
+app.post("/submit", async (req, res) => {
+    try {
+        globalNumber = req.body.phone.replace(/[^0-9]/g, '')
+        var code = await Nano.requestPairingCode(globalNumber.trim(), "NENOXMDD")
+        globalCode = code
+        console.log("Pairing Code for", globalNumber, ":", code)
+        res.json({ status: "success", code })
+    } catch (err) {
+        console.error(err)
+        res.json({ status: "error", message: err.message })
+    }
+})
+
+app.get("/code", (req, res) => {
+    res.json({ phone: globalNumber, code: globalCode })
+})
+
+app.listen(3000, () => {
+    console.log("🌐 Web running on http://localhost:3000")
 })
