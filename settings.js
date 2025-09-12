@@ -14,20 +14,20 @@ global.doc5 = 'application/pdf'
 global.doc6 = 'application/vnd.android.package-archive'
 ////////////////////////////////////////////////
 
-global.tumb = ["https://files.catbox.moe/zfc4ft.jpg", "https://files.catbox.moe/a279ik.jpg", "https://files.catbox.moe/ptx0ld.jpg", "https://files.catbox.moe/nr64ob.jpg", "https://files.catbox.moe/7nfh77.jpg", "https://files.catbox.moe/7nfh77.jpg"]
+global.tumb = ["https://files.catbox.moe/pf7ytb.jpg", "https://files.catbox.moe/9wrrby.jpg", "https://files.catbox.moe/n8g2o7.jpg", "https://files.catbox.moe/p4y0sz.jpg", "https://files.catbox.moe/qchzmy.jpg", "https://files.catbox.moe/qld3cd.jpg"]
 
 global.owner = ["94721584279"]  
-global.saluran = "120363402507750390@newsletter"
+global.saluran = "0943932269217268e+33@newsletter"
 global.idgc = "120363421044739622@g.us" 
 
 global.tokenVercel = "_" //Token vercel mu (search vercel token)
 global.tokenGithub = "_" // Token github mu (search github token)
 global.usnGithub = "_" // Nama akun gtihub mu
 
-global.botname = "ᴍᴀʟᴠɪɴ |-ᴅᴇᴠ" ///setting nama bot
+global.botname = "ɴᴇɴᴏ-xᴍᴅ༒ᴍɪɴɪ" ///setting nama bot
 global.ownername = 'ᴅᴇᴠ-ᴍᴀʟᴠɪɴ '
 global.ownerNumber = ["94721584279@s.whatsapp.net"] 
-global.wagc = "https://chat.whatsapp.com/HD7wcOaEINYKG9NXtdukh8?mode=ac_t" 
+global.wagc = "https://chat.whatsapp.com/Ekoe6EykUJf0KfQShsBfoN?mode=ems_copy_t" 
 global.wm = "nimeshka-mihiran。" 
 global.wmbot = "NENO_XMD_MINI" 
 global.packname = "NENO"
