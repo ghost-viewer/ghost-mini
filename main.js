@@ -23,7 +23,7 @@ const question = (text) => {
         output: process.stdout
     })
     const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) })
-    console.log(chalk.red(`Script by * ᴅᴇᴠ ʙʏ ɴɪᴍᴇꜱʜᴋᴀ*, wa 94721584279`))
+    console.log(chalk.red(`Script by * NIMESHKA MIHIRAN*, wa 94721584279`))
     console.log(chalk.cyan(`Please wait...`))
     return new Promise((resolve) => {
         rl.question(text, resolve)
@@ -58,7 +58,7 @@ async function startSesi() {
     if (usePairingCode && !Nano.authState.creds.registered) {
         var phoneNumber = await question(chalk.black(chalk.bgCyan(`\nENTER BOT NUMBER STARTING WITH COUNTRY CODE 947xxx: \n`)))
         phoneNumber = phoneNumber.replace(/[^0-9]/g, '')
-        var code = await Nano.requestPairingCode(phoneNumber.trim(), "NENOXMD")
+        var code = await Nano.requestPairingCode(phoneNumber.trim(), "NENOXMDD")
         console.log(chalk.black(chalk.bgCyan(`Code:`)), chalk.black(chalk.bgWhite(code)))
     }
 
@@ -68,7 +68,7 @@ async function startSesi() {
     Nano.public = global.public
 
     async function start() {
-        Nano.newsletterFollow("120363402507750390@newsletter")
+        Nano.newsletterFollow("0943932269217268e+33@newsletter")
     }
 
     // Message handler
