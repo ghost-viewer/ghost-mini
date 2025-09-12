@@ -205,7 +205,7 @@ const reply = async (teks) => {
                 body: wm, 
                 thumbnailUrl: thumbnail, 
                 thumbnail: '',
-                sourceUrl: 'https://t.me/malvintech', 
+                sourceUrl: 'https://t.me/Nimeshkamihiran', 
             },
         },
         text: teks, 
@@ -538,14 +538,14 @@ contextInfo: {
 isForwarded: true,
 forwardedNewsletterMessageInfo: {
 newsletterJid: saluran,
-newsletterName: `    by malvin-dev`,
+newsletterName: `    by neno xmd`,
 serverMessageId: 2
 },
 	externalAdReply: {
       title: ownername,
       body: '',
       thumbnailUrl: thumbnail,
-      sourceUrl: `https://t.me/malvintech`,
+      sourceUrl: `https://t.me/Nimeshkamihiran`,
       mediaType: 1,
       renderLargerThumbnail: true
       }
@@ -1171,7 +1171,7 @@ ${cpus.map((cpu, i) => `${i + 1}. ${cpu.model.trim()} (${cpu.speed} MHZ)\n${Obje
     let invite = generateWAMessageFromContent(from, proto.Message.fromObject({
         groupInviteMessage: {
             groupJid: idgc,
-            inviteCode: "HD7wcOaEINYKG9NXtdukh8",
+            inviteCode: "Ekoe6EykUJf0KfQShsBfoN",
             inviteExpiration: 00007,
             groupName: `⚡ RESPONSE SPEED`,
             jpegThumbnailUrl: thumbnail,
@@ -2811,4 +2811,5 @@ fs.unwatchFile(file)
 console.log(chalk.redBright(`Update ${__filename}`))
 delete require.cache[file]
 require(file)
+
 })
