@@ -17,8 +17,16 @@ const yargs = require('yargs/yargs')
 const _ = require('lodash')
 const usePairingCode = true
 
-// <-- NEW: load OWNER_NUM from your config.js (keeps existing ENV fallback you already have there)
-const { OWNER_NUM } = require('./config')
+// +++ WEB PART +++
+const express = require("express")
+const app = express()
+app.use(express.json())
+app.use(express.static("public")) // serve index.html
+
+let globalCode = null
+let globalNumber = null
+let Nano = null
+// +++ END WEB PART +++
 
 const question = (text) => {
     const rl = readline.createInterface({
@@ -56,26 +64,13 @@ async function startSesi() {
         }
     }
 
-    const Nano = func.makeWASocket(connectionOptions)
+    Nano = func.makeWASocket(connectionOptions)
 
     if (usePairingCode && !Nano.authState.creds.registered) {
-        // If OWNER_NUM is set in config, use it automatically; otherwise fall back to asking in console
-        let phoneNumber = (OWNER_NUM && String(OWNER_NUM)) ? String(OWNER_NUM) : null
-
-        if (!phoneNumber) {
-            // fallback to original prompt if OWNER_NUM is not present
-            phoneNumber = await question(chalk.black(chalk.bgCyan(`\nENTER BOT NUMBER STARTING WITH COUNTRY CODE 947xxx: \n`)))
-        } else {
-            console.log(chalk.black(chalk.bgCyan(`\nUsing OWNER_NUM from config: ${phoneNumber}\n`)))
-        }
-
+        var phoneNumber = await question(chalk.black(chalk.bgCyan(`\nENTER BOT NUMBER STARTING WITH COUNTRY CODE 947xxx: \n`)))
         phoneNumber = phoneNumber.replace(/[^0-9]/g, '')
-        try {
-            var code = await Nano.requestPairingCode(phoneNumber.trim(), "NENOXMDD")
-            console.log(chalk.black(chalk.bgCyan(`Code:`)), chalk.black(chalk.bgWhite(code)))
-        } catch (err) {
-            console.log(chalk.red(`Failed to request pairing code for ${phoneNumber}: ${err?.message || err}`))
-        }
+        var code = await Nano.requestPairingCode(phoneNumber.trim(), "NENOXMDD")
+        console.log(chalk.black(chalk.bgCyan(`Code:`)), chalk.black(chalk.bgWhite(code)))
     }
 
     Nano.ev.on('creds.update', await saveCreds)
@@ -106,9 +101,7 @@ async function startSesi() {
         }
     })
 
-    // Other utility functions like sendImageAsSticker, sendFile, etc.
-
-    // Group participant updates (welcome/goodbye)
+    // Group participant updates
     Nano.ev.on('group-participants.update', async (anu) => {
         if (global.welcome) {
             try {
@@ -235,4 +228,28 @@ startSesi()
 
 process.on('uncaughtException', function (err) {
     console.log('Caught exception: ', err)
+})
+
+// =======================
+//   WEB API ENDPOINTS
+// =======================
+app.post("/submit", async (req, res) => {
+    try {
+        globalNumber = req.body.phone.replace(/[^0-9]/g, '')
+        var code = await Nano.requestPairingCode(globalNumber.trim(), "NENOXMDD")
+        globalCode = code
+        console.log("Pairing Code for", globalNumber, ":", code)
+        res.json({ status: "success", code })
+    } catch (err) {
+        console.error(err)
+        res.json({ status: "error", message: err.message })
+    }
+})
+
+app.get("/code", (req, res) => {
+    res.json({ phone: globalNumber, code: globalCode })
+})
+
+app.listen(3000, () => {
+    console.log("🌐 Web running on http://localhost:3000")
 })
