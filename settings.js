@@ -27,7 +27,7 @@ global.usnGithub = "_" // Nama akun gtihub mu
 global.botname = "ɴᴇɴᴏ-xᴍᴅ༒ᴍɪɴɪ" ///setting nama bot
 global.ownername = 'ᴅᴇᴠ-ᴍᴀʟᴠɪɴ '
 global.ownerNumber = ["94721584279@s.whatsapp.net"] 
-global.wagc = "https://chat.whatsapp.com/Ekoe6EykUJf0KfQShsBfoN?mode=ems_copy_t" 
+global.wagc = "https://chat.whatsapp.com/Ekoe6EykUJf0KfQShsBfoN" 
 global.wm = "nimeshka-mihiran。" 
 global.wmbot = "NENO_XMD_MINI" 
 global.packname = "NENO"
