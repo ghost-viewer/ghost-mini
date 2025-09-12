@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NENO XMD MINI - Pairing</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #38bdf8;
+      letter-spacing: 1px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #38bdf8;
+      border: none;
+      border-radius: 8px;
+      color: #0f172a;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #0f172a;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #22c55e;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>NENO XMD MINI</h1>
+    <p>Enter your WhatsApp bot number below 👇</p>
+    <input type="text" id="phone" placeholder="947XXXXXXXX">
+    <button onclick="submitNumber()">Submit</button>
+
+    <div id="codeBox" class="result">Pairing Code: ---</div>
+
+    <div class="footer">© 2025 NENO XMD MINI | Developed by Nimeshka Mihiran</div>
+  </div>
+
+  <script>
+    async function submitNumber() {
+      let phone = document.getElementById("phone").value.trim()
+      if (!phone) {
+        alert("Please enter your number!")
+        return
+      }
+      document.getElementById("codeBox").innerText = "Requesting code..."
+      try {
+        let res = await fetch("/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone })
+        })
+        let data = await res.json()
+        if (data.code) {
+          document.getElementById("codeBox").innerText = "Pairing Code: " + data.code
+        } else {
+          document.getElementById("codeBox").innerText = "Error: " + (data.message || "Something went wrong")
+        }
+      } catch (err) {
+        document.getElementById("codeBox").innerText = "Error: " + err.message
+      }
+    }
+
+    // auto-refresh pairing code every 3s
+    setInterval(async () => {
+      let res = await fetch("/code")
+      let data = await res.json()
+      if (data.code) {
+        document.getElementById("codeBox").innerText = "Pairing Code: " + data.code
+      }
+    }, 3000)
+  </script>
+</body>
+</html>
