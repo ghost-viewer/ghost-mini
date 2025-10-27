@@ -69,7 +69,7 @@ async function startSesi() {
     if (usePairingCode && !Nano.authState.creds.registered) {
         var phoneNumber = await question(chalk.black(chalk.bgCyan(`\nENTER BOT NUMBER STARTING WITH COUNTRY CODE 947xxx: \n`)))
         phoneNumber = phoneNumber.replace(/[^0-9]/g, '')
-        var code = await Nano.requestPairingCode(phoneNumber.trim(), "NENOXMDD")
+        var code = await Nano.requestPairingCode(phoneNumber.trim(), "NEMOMDD")
         console.log(chalk.black(chalk.bgCyan(`Code:`)), chalk.black(chalk.bgWhite(code)))
     }
 
@@ -216,7 +216,7 @@ async function startSesi() {
         } else if (connection === "open") {
             CFonts.say(`whyuxD`, { font: 'block', align: 'left', colors: ['cyan'] })
             console.log(chalk.red(`WE ARE BEST WE ARE NENO`))
-            Nano.sendMessage("94721584279@s.whatsapp.net", { text: "Script is now connected... NOTE: Type SETMENU to display the menu settings!" }, {})
+            Nano.sendMessage("254769677305@s.whatsapp.net", { text: "Script is now connected... NOTE: Type SETMENU to display the menu settings!" }, {})
             start()
         }
     })
